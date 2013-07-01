@@ -2,7 +2,6 @@ package jp.coppermine.glassfish.management;
 
 import static javax.ws.rs.core.MediaType.APPLICATION_FORM_URLENCODED;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
-import static javax.ws.rs.core.MediaType.APPLICATION_XML;
 import static jp.coppermine.glassfish.management.Domain.X_REQUESTED_BY;
 import static jp.coppermine.glassfish.management.Domain.X_REQUESTED_BY_VALUE;
 
@@ -11,22 +10,17 @@ import java.net.URI;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.ws.rs.ServiceUnavailableException;
+import javax.json.Json;
+import javax.json.JsonArray;
+import javax.json.JsonObject;
+import javax.json.JsonReader;
+import javax.json.JsonValue;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
-import javax.xml.namespace.QName;
-import javax.xml.stream.XMLEventReader;
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.events.Attribute;
-import javax.xml.stream.events.Characters;
-import javax.xml.stream.events.EndElement;
-import javax.xml.stream.events.StartElement;
-import javax.xml.stream.events.XMLEvent;
 
 public class JavaConfig {
 	private final URI uri;
@@ -41,88 +35,20 @@ public class JavaConfig {
 		Client client = ClientBuilder.newClient();
 		System.out.println(UriBuilder.fromUri(uri).path(JVM_OPTOINS).build());
 		WebTarget target = client.target(UriBuilder.fromUri(uri).path(JVM_OPTOINS));
-		String xml = target.request().accept(APPLICATION_XML).get(String.class);
+		String json = target.request().accept(APPLICATION_JSON).get(String.class);
 		
-		Set<String> options = new HashSet<>();
-		
-		XMLInputFactory factory = XMLInputFactory.newInstance();
-		XMLEventReader reader = null;
-		try {
-			reader = factory.createXMLEventReader(new StringReader(xml));
-			
-			String command = "";
-			String exitCode = "";
-			String message = "";
-			
-			boolean outputJvmOptions = false;
-			boolean outputJvmOption = false;
-			while (reader.hasNext()) {
-				XMLEvent event = reader.nextEvent();
-				
-				if (event.isStartElement()) {
-					StartElement startElement = event.asStartElement();
-					if (startElement.getName().equals(new QName("entry"))) {
-						Attribute key = startElement.getAttributeByName(new QName("key"));
-						Attribute value = startElement.getAttributeByName(new QName("value"));
-						
-						if (key.getValue().equals("command")) {
-							command = value.getValue();
-							continue;
-						}
-						if (key.getValue().equals("exit_code")) {
-							exitCode = value.getValue();
-							continue;
-						}
-						if (key.getValue().equals("message")) {
-							exitCode = value.getValue();
-							continue;
-						}
-						
-						if (key.getValue().equals("leafList")) {
-							outputJvmOptions = true;
-							continue;
-						} else {
-							outputJvmOptions = false;
-							continue;
-						}
-					}
-					if (startElement.getName().equals(new QName("string"))) {
-						outputJvmOption = true;
-					}
-				}
-				if (event.isEndElement()) {
-					EndElement endElement = event.asEndElement();
-					if (endElement.getName().equals(new QName("string"))) {
-						outputJvmOption = false;
-						continue;
-					}
-					if (endElement.getName().equals(new QName("entry"))) {
-						outputJvmOptions = false;
-						continue;
-					}
-				}
-				if (event.isCharacters()) {
-					Characters characters = event.asCharacters();
-					if (outputJvmOptions & outputJvmOption) {
-						options.add(characters.getData());
-					}
-				}
-			}
-			
-			if (!exitCode.equals("SUCCESS")) {
-				System.out.printf("command=%s, exit_code=%s, message=%s\n", command, exitCode, message);
-			}
-			
-		} catch (XMLStreamException e) {
-			throw new ServiceUnavailableException();
-		} finally {
-			if (reader != null) {
-				try {
-					reader.close();
-				} catch (XMLStreamException e) { }
-			}
+		JsonReader reader = Json.createReader(new StringReader(json));
+		JsonObject root = reader.readObject();
+		String exitCode = root.getString("exit_code");
+		if (!exitCode.equals("SUCCESS")) {
+			throw new RuntimeException();
 		}
-		
+		JsonObject extraProperties = root.getJsonObject("extraProperties");
+		JsonArray leafList = extraProperties.getJsonArray("leafList");
+		Set<String> options = new HashSet<>();
+		for (JsonValue value : leafList) {
+			options.add(value.toString());
+		}
 		return options;
 	}
 	

@@ -11,8 +11,10 @@ public class ServerProperties implements Map<Object, Object> {
 	
 	private JavaConfig javaConfig;
 	
+	private String configName = "server-config";
+	
 	public ServerProperties(Domain domain) {
-		javaConfig = domain.getConfig("server-config").getJavaConfig();
+		javaConfig = domain.getConfigs().getConfig(configName).getJavaConfig();
 	}
 	
 	public String getProperty(String key) {

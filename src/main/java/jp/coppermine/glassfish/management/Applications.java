@@ -16,10 +16,10 @@ import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 
-public class Application {
+public class Applications {
 	private final URI uri;
 	
-	Application(URI uri) {
+	Applications(URI uri) {
 		this.uri = uri;
 	}
 	
@@ -66,10 +66,5 @@ public class Application {
 			set.add(key.trim());
 		}
 		return set;
-	}
-	
-	public static void main(String...args) {
-		Domain domain = new Domain("localhost", 4848);
-		System.out.println(domain.getApplication().listApplicationRefs());
 	}
 }

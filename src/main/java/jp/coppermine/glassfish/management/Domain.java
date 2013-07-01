@@ -25,14 +25,14 @@ public class Domain {
 		return baseUri;
 	}
 	
-	public Config getConfig(String config) {
-		URI uri = UriBuilder.fromUri(baseUri).path("configs").path("config").path(config).build();
-		return new Config(uri);
+	public Configs getConfigs() {
+		URI uri = UriBuilder.fromUri(baseUri).path("configs").build();
+		return new Configs(uri);
 	}
 	
-	public Application getApplication() {
+	public Applications getApplication() {
 		URI uri = UriBuilder.fromUri(baseUri).path("applications").build();
-		return new Application(uri);
+		return new Applications(uri);
 	}
 	
 	public void restartDomain() {
