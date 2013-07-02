@@ -1,53 +1,60 @@
 package jp.coppermine.glassfish.util;
 
 import java.io.IOException;
-import java.net.URI;
 import java.nio.file.Path;
-import java.util.Arrays;
-
-import javax.ws.rs.core.UriBuilder;
+import java.nio.file.Paths;
 
 public class Runtime {
-	
-	public static enum SubCommand {
-		START("start-domain"), STOP("stop-domain"), RESTART("restart-doman");
+	public static class Builder {
+		private Path jdk;
+		private Path dir;
+		private Path admincli = Paths.get("glassfish", "modules", "admin-cli.jar");
+		private String domainName = "domain1";
 		
-		private String subCommand;
-		SubCommand(String subCommand) {
-			this.subCommand = subCommand;
+		private Builder(Path javaHome) {
+			if (System.getProperty("file.separator").equals("\\")) {
+				jdk = javaHome.resolve("bin").resolve("java.exe");
+			} else {
+				jdk = javaHome.resolve("bin").resolve("java");
+			}
 		}
 		
-		@Override
-		public String toString() {
-			return subCommand;
+		public Builder installDir(Path dir) {
+			this.dir = dir;
+			return this;
 		}
 		
+		public Builder domain(String domainName) {
+			this.domainName = domainName;
+			return this;
+		}
+		
+		private Process run(String subCommand) {
+			try {
+				return new ProcessBuilder(jdk.toString(), "-jar", dir.resolve(admincli).toString(), subCommand, domainName).start();
+			} catch (IOException e) {
+				throw new RuntimeException(e);
+			}
+		}
+		
+		public Process start() {
+			return run("start-domain");
+		}
+		
+		public Process restart() {
+			return run("restart-domain");
+		}
+		
+		public Process stop() {
+			return run("stop-domain");
+		}
 	}
 	
-	private URI uri = UriBuilder.fromPath("glassfish").path("modules").path("admin-cli.jar").build();
-	
-	private String command;
-	
-	private Runtime(Path jdk) {
-		command = jdk.toString();
+	public static Builder jdk(Path javaHome) {
+		return new Builder(javaHome);
 	}
 	
-	private Runtime(String jdk) {
-		command = jdk;
-	}
-	
-	public static Runtime of(Path jdk) {
-		return new Runtime(jdk);
-	}
-	
-	public static Runtime of(String jdk) {
-		return new Runtime(jdk);
-	}
-	
-	public Process domain(SubCommand subCommand) throws IOException {
-//		ProcessBuilder pb = new ProcessBuilder().command(command, "-jar", uri.toString(), subCommand.toString());
-		System.out.println(Arrays.asList(command, "-jar", "C:", "glassfish4", "glassfish", "modules", "admin-cli.jar", subCommand.toString()));
-		ProcessBuilder pb = new ProcessBuilder().command(command, "-jar", "C:", "glassfish4", "glassfish", "modules", "admin-cli.jar", subCommand.toString());
-		return pb.start();
+	public static Builder jdk(String javaHome) {
+		return new Builder(Paths.get(javaHome));
 	}
 }
