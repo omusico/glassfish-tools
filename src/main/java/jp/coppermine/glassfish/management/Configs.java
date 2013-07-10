@@ -1,25 +1,40 @@
 package jp.coppermine.glassfish.management;
 
 import java.net.URI;
+import java.util.Set;
 
 import javax.ws.rs.core.UriBuilder;
 
 public class Configs {
-	private final URI uri;
-	
-	Configs(URI uri) {
-		this.uri = uri;
-	}
-	
-	public Config getConfig(String configName) {
-		return new Config(UriBuilder.fromUri(uri).path("config").path(configName).build());
-	}
-	
-	public Config getDefaultConfig() {
-		return getConfig("default-config");
-	}
-	
-	public Config getServerConfig() {
-		return getConfig("server-config");
-	}
+
+    private UriBuilder uriBuilder;
+
+    Configs(UriBuilder uriBuilder) {
+        this.uriBuilder = uriBuilder;
+    }
+
+    public URI getUri() {
+        return uriBuilder.build();
+    }
+
+    public Config config(String name) {
+        return new Config(uriBuilder.clone().path("config").path(name));
+    }
+
+    public Config defaultConfig() {
+        return config("default-config");
+    }
+
+    public Config serverConfig() {
+        return config("server-config");
+    }
+
+    public Set<String> listConfigs() {
+        // TODO should implement
+        return null;
+    }
+
+    public void copyConfig() {
+        // TODO should implement
+    }
 }
