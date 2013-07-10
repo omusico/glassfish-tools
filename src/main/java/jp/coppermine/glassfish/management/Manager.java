@@ -1,7 +1,22 @@
 package jp.coppermine.glassfish.management;
 
-import java.net.URI;
+import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 
+import java.io.StringReader;
+import java.net.URI;
+import java.util.EnumMap;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.json.Json;
+import javax.json.JsonArray;
+import javax.json.JsonObject;
+import javax.json.JsonReader;
+import javax.json.JsonValue;
+import javax.json.JsonValue.ValueType;
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.UriBuilder;
 
 public class Manager {
@@ -155,16 +170,69 @@ public class Manager {
         // TODO should implement
     }
 
-    public void listJvmOptions() {
-        // TODO should implement
+    public Map<String, Map<String, String>> listJvmOptions(String server) {
+    	Client client = ClientBuilder.newClient();
+    	WebTarget target = client.target(uriBuilder).path("list-jvm-options").queryParam("target", server);
+    	String json = target.request(APPLICATION_JSON).get(String.class);
+    	
+    	JsonReader jsonReader = Json.createReader(new StringReader(json));
+    	JsonObject root = jsonReader.readObject();
+    	
+    	String command = root.getString("command");
+    	String exitCode = root.getString("exit_code");
+    	String message = root.getString("message");
+    	if (!exitCode.equals("SUCCESS")) {
+    		throw new RuntimeException(String.format("[command=%s][exit_code=%s]%s", command, exitCode, message));
+    	}
+    	
+    	Map<String, Map<String, String>> jvmOptions = new HashMap<>();
+    	JsonArray children = root.getJsonArray("children");
+    	for (JsonValue value : children) {
+    		if (value.getValueType() == ValueType.OBJECT) {
+    			JsonObject child = (JsonObject) value;
+    			Map<String, String> properties = new HashMap<>();
+    			for (String key : child.getJsonObject("properties").keySet()) {
+    				properties.put(key, child.getJsonObject("properties").getString(key, ""));
+    			}
+    			jvmOptions.put(child.getString("message"), properties);
+    		}
+    	}
+    	return jvmOptions;
     }
 
     public void get() {
         // TODO should implement
     }
-
-    public void version() {
-        // TODO should implement
+    
+    public static enum Version {
+    	VERSION, VERSION_NUMBER, FULL_VERSION
+    }
+    
+    public EnumMap<Version, String> version() {
+    	Client client = ClientBuilder.newClient();
+    	WebTarget target = client.target(uriBuilder).path("version");
+    	String json = target.request(APPLICATION_JSON).get(String.class);
+    	
+    	JsonReader jsonReader = Json.createReader(new StringReader(json));
+    	JsonObject root = jsonReader.readObject();
+    	
+    	String command = root.getString("command");
+    	String exitCode = root.getString("exit_code");
+    	String message = root.getString("message");
+    	if (!exitCode.equals("SUCCESS")) {
+    		throw new RuntimeException(String.format("[command=%s][exit_code=%s]%s", command, exitCode, message));
+    	}
+    	
+    	JsonObject extraProperties = root.getJsonObject("extraProperties");
+    	String version = extraProperties.getString("version");
+    	String versionNumber = extraProperties.getString("version-number");
+    	String fullVersion = extraProperties.getString("full-version");
+    	
+    	EnumMap<Version, String> result = new EnumMap<>(Version.class);
+    	result.put(Version.VERSION, version);
+    	result.put(Version.VERSION_NUMBER, versionNumber);
+    	result.put(Version.FULL_VERSION, fullVersion);
+    	return result;
     }
 
     public void restartDomain() {

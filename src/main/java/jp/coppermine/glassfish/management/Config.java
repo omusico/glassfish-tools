@@ -6,14 +6,18 @@ import javax.ws.rs.core.UriBuilder;
 
 public class Config {
 
-    private UriBuilder uriBuilder;
+    private URI uri;
 
+    Config(URI uri) {
+    	this.uri = uri;
+    }
+    
     Config(UriBuilder uriBuilder) {
-        this.uriBuilder = uriBuilder;
+        this.uri = uriBuilder.build();
     }
 
     public URI getUri() {
-        return uriBuilder.build();
+        return uri;
     }
 
     public Object adminService() {
@@ -72,7 +76,7 @@ public class Config {
     }
 
     public JavaConfig javaConfig() {
-        return new JavaConfig(uriBuilder.clone().path("java-config"));
+        return new JavaConfig(UriBuilder.fromUri(uri).path("java-config"));
     }
 
     public Object jsmAvailability() {
@@ -166,4 +170,34 @@ public class Config {
     public void deleteConfig() {
 
     }
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((uri == null) ? 0 : uri.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Config other = (Config) obj;
+		if (uri == null) {
+			if (other.uri != null)
+				return false;
+		} else if (!uri.equals(other.uri))
+			return false;
+		return true;
+	}
+
+	@Override
+	public String toString() {
+		return "Config [uri=" + uri + "]";
+	}
 }
