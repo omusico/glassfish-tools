@@ -48,7 +48,7 @@ public class Manager {
     }
 
     public ManagedJobConfig managedJobConfig() {
-        // TODO should implement
+        // TODO (GFv4) should implement
         return new ManagedJobConfig();
     }
 
@@ -78,7 +78,7 @@ public class Manager {
     }
 
     public SecurityConfigurations securityConfigurations() {
-        // TODO should implement
+        // TODO (GFv4) should implement
         return new SecurityConfigurations();
     }
 
@@ -116,7 +116,7 @@ public class Manager {
     }
 
     public void unfreezeTransactionService() {
-        // TODO should implement
+        // TODO (GFv4) should implement
     }
 
     public void configureLdapForAdmin() {
@@ -148,7 +148,7 @@ public class Manager {
     }
 
     public void osgi() {
-        // TODO should implement
+        // TODO (GFv4) should implement
     }
 
     public void listTimers() {
@@ -169,6 +169,7 @@ public class Manager {
 
     public void restartDomain() {
         // TODO should implement
+        // TODO GFv3 - /management/domain/restart
     }
 
     public void uptime() {
@@ -256,7 +257,7 @@ public class Manager {
     }
 
     public void setLogFileFormat() {
-        // TODO should implement
+        // TODO (GFv4) should implement
     }
 
     public void listLogAttributes() {

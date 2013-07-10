@@ -13,12 +13,16 @@ import java.util.List;
 import java.util.Properties;
 
 public class JavaRuntime {
+    
+    public static final String JDK5 = "1.5.0";
+    
+    public static final String JDK6 = "1.6.0";
 
-    public static final String JDK6 = "1.6";
+    public static final String JDK7 = "1.7.0";
 
-    public static final String JDK7 = "1.7";
-
-    public static final String JDK8 = "1.8";
+    public static final String JDK8 = "1.8.0";
+    
+    public static final String JDK81 = "1.8.1";
 
     private final Path jvmPath;
 
@@ -116,17 +120,5 @@ public class JavaRuntime {
             System.out.printf("%s=%s\n", key, System.getProperties().get(key));
         }
         return System.getProperties();
-    }
-
-    public static void main(String... args) throws InterruptedException {
-        final Path glassfishBase = Paths.get("C:", "glassfish4");
-        final Path adminCli = Paths.get("glassfish", "modules", "admin-cli.jar");
-
-        JavaRuntime runtime = JavaRuntime.getRuntime();
-        runtime.getSystemProperties();
-        System.out.printf("jre: %s\n", runtime.getJvmPath());
-        Process process = runtime.execute(glassfishBase.resolve(adminCli), "start-domain");
-        int result = process.waitFor();
-        System.out.println(result);
     }
 }
