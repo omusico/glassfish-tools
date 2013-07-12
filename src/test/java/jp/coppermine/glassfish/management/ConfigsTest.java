@@ -1,7 +1,7 @@
 package jp.coppermine.glassfish.management;
 
 import static org.junit.Assert.*;
-import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.Matchers.*;
 
 import java.util.Set;
 

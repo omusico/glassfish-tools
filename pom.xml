@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>jp.coppermine</groupId>
   <artifactId>glassfish-tools</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
+  <version>0.1.0-SNAPSHOT</version>
   <build>
     <plugins>
      <plugin>
@@ -32,6 +32,18 @@
   		<groupId>org.glassfish</groupId>
   		<artifactId>jsonp-jaxrs</artifactId>
   		<version>1.0</version>
+  	</dependency>
+  	<dependency>
+  		<groupId>junit</groupId>
+  		<artifactId>junit</artifactId>
+  		<version>4.10</version>
+  		<scope>test</scope>
+  	</dependency>
+  	<dependency>
+  		<groupId>org.hamcrest</groupId>
+  		<artifactId>hamcrest-all</artifactId>
+  		<version>1.3</version>
+  		<scope>test</scope>
   	</dependency>
   </dependencies>
 </project>
