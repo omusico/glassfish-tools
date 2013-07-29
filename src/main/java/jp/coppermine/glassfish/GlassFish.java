@@ -1,8 +1,6 @@
 package jp.coppermine.glassfish;
 
 import java.net.URI;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 
 import javax.ws.rs.core.UriBuilder;
 
@@ -50,19 +48,5 @@ public class GlassFish {
 
     public Monitor monitor() {
         return new Monitor(uriBuilder.clone().path("monitoring").path("domain"));
-    }
-
-    public static class Directories {
-        public static Path home() {
-            return Paths.get("glassfish");
-        }
-
-        public static Path modules() {
-            return home().resolve("modules");
-        }
-
-        public static Path adminCli() {
-            return modules().resolve("admin-cli.jar");
-        }
     }
 }

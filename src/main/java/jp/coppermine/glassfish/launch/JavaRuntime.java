@@ -21,11 +21,11 @@ public class JavaRuntime {
 		return new JavaRuntime(javaHome);
 	}
 	
-	public Process execute(String jarName, String...commands) {
+	public Process execute(String jarPath, String...commands) {
 		List<String> commandList = new ArrayList<>();
 		commandList.add(Paths.get(getJavaHome(), "bin", OperatingSystem.autoDetect().java()).toString());
 		commandList.add("-jar");
-		commandList.add(jarName);
+		commandList.add(jarPath);
 		commandList.addAll(Arrays.asList(commands));
         ProcessBuilder pb = new ProcessBuilder(commandList);
         try {
