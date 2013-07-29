@@ -1,4 +1,4 @@
-package jp.coppermine.glassfish.runtime;
+package jp.coppermine.glassfish.launch;
 
 public enum JavaVersion {
 	JDK5("1.5.0"), JDK6("1.6.0"), JDK7("1.7.0"), JDK8("1.8.0"), JDK81("1.8.1");

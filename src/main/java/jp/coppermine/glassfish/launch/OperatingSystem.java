@@ -1,7 +1,5 @@
 package jp.coppermine.glassfish.launch;
 
-import java.nio.file.Path;
-import java.nio.file.Paths;
 
 public enum OperatingSystem {
 	WINDOWS("Windows"), LINUX("Linux"), MAC_OS("Mac OS X"), SOLARIS("SunOS"), AIX("AIX"), HP_UX("HP-UX"), FREE_BSD("FreeBSD");
@@ -35,15 +33,15 @@ public enum OperatingSystem {
 		return null;
 	}
 	
-	public Path java() {
-		return this == WINDOWS ? Paths.get("java.exe") : Paths.get("java");
+	public String java() {
+		return this == WINDOWS ? "java.exe" : "java";
 	}
 	
-	public Path javaw() {
-		return this == WINDOWS ? Paths.get("javaw.exe") : Paths.get("java");
+	public String javaw() {
+		return this == WINDOWS ? "javaw.exe" : "java";
 	}
 	
-	public Path javac() {
-		return this == WINDOWS ? Paths.get("javac.exe") : Paths.get("javac");
+	public String javac() {
+		return this == WINDOWS ? "javac.exe" : "javac";
 	}
 }
