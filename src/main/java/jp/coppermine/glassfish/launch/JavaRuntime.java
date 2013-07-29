@@ -1,24 +1,75 @@
 package jp.coppermine.glassfish.launch;
 
+import java.io.File;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 
-public class JavaRuntime {
+public abstract class JavaRuntime {
 	private String javaHome;
 	
-	private JavaRuntime(String javaHome) {
+	protected JavaRuntime() {
+		this.javaHome = findJavaHome();
+	}
+	
+	protected JavaRuntime(JavaVersion version) {
+		this.javaHome = findJavaHome(version);
+	}
+	
+	protected JavaRuntime(String javaHome) {
 		this.javaHome = javaHome;
 	}
 	
-	protected String getJavaHome() {
+	protected abstract String findJavaHome();
+	
+	protected abstract String findJavaHome(JavaVersion version);
+	
+	public String getJavaHome() {
 		return javaHome;
 	}
 	
-	public static JavaRuntime getRuntime(String javaHome) {
-		return new JavaRuntime(javaHome);
+	public static JavaRuntime find() {
+		return of(null);
+	}
+	
+	public static JavaRuntime of(String javaHome) {
+		OperatingSystem os = OperatingSystem.autoDetect();
+		switch (os) {
+		case WINDOWS:
+			return javaHome == null ? new JavaWindowsRuntime() : new JavaWindowsRuntime(javaHome);
+		case MAC_OS:
+			throw new UnsupportedOperationException(String.format("Unsupported System: %s", os));
+		case LINUX:
+			throw new UnsupportedOperationException(String.format("Unsupported System: %s", os));
+		case SOLARIS:
+			throw new UnsupportedOperationException(String.format("Unsupported System: %s", os));
+		case AIX:
+			throw new UnsupportedOperationException(String.format("Unsupported System: %s", os));
+		case FREE_BSD:
+			throw new UnsupportedOperationException(String.format("Unsupported System: %s", os));
+		default:
+			throw new IllegalStateException(String.format("Unknown System Architecture: %s", os.toString()));
+		}
+	}
+	
+	protected String[] findJDKs(String parent, final JavaVersion version) {
+		String[] files = new File(parent).list(new FilenameFilter() {
+			@Override
+			public boolean accept(File dir, String name) {
+				return name.startsWith("jdk" + version);
+			}
+		});
+		Arrays.sort(files, new Comparator<String>() {
+			@Override
+			public int compare(String o1, String o2) {
+				return -o1.compareTo(o2);
+			}
+		});
+		return files;
 	}
 	
 	public Process execute(String jarPath, String...commands) {
