@@ -24,7 +24,9 @@ public abstract class JavaRuntime {
 		this.javaHome = javaHome;
 	}
 	
-	protected abstract String findJavaHome();
+	protected String findJavaHome() {
+		return findJavaHome(JavaVersion.ANY);
+	}
 	
 	protected abstract String findJavaHome(JavaVersion version);
 	
@@ -33,22 +35,34 @@ public abstract class JavaRuntime {
 	}
 	
 	public static JavaRuntime find() {
-		return of(null);
+		return of(JavaVersion.ANY);
+	}
+	
+	public static JavaRuntime of(JavaVersion version) {
+		OperatingSystem os = OperatingSystem.autoDetect();
+		switch (os) {
+		case WINDOWS:
+			return new JavaWindowsRuntime(version);
+		case MAC_OS:
+		case LINUX:
+		case SOLARIS:
+		case AIX:
+		case FREE_BSD:
+			throw new UnsupportedOperationException(String.format("Unsupported System: %s", os));
+		default:
+			throw new IllegalStateException(String.format("Unknown System Architecture: %s", os.toString()));
+		}
 	}
 	
 	public static JavaRuntime of(String javaHome) {
 		OperatingSystem os = OperatingSystem.autoDetect();
 		switch (os) {
 		case WINDOWS:
-			return javaHome == null ? new JavaWindowsRuntime() : new JavaWindowsRuntime(javaHome);
+			return new JavaWindowsRuntime(javaHome);
 		case MAC_OS:
-			throw new UnsupportedOperationException(String.format("Unsupported System: %s", os));
 		case LINUX:
-			throw new UnsupportedOperationException(String.format("Unsupported System: %s", os));
 		case SOLARIS:
-			throw new UnsupportedOperationException(String.format("Unsupported System: %s", os));
 		case AIX:
-			throw new UnsupportedOperationException(String.format("Unsupported System: %s", os));
 		case FREE_BSD:
 			throw new UnsupportedOperationException(String.format("Unsupported System: %s", os));
 		default:

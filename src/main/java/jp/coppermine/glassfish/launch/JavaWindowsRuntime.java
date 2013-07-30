@@ -4,9 +4,9 @@ import java.io.FileNotFoundException;
 import java.nio.file.Paths;
 
 public class JavaWindowsRuntime extends JavaRuntime {
-
+	
 	protected JavaWindowsRuntime() {
-		super(JavaVersion.JDK7);
+		super();
 	}
 	
 	protected JavaWindowsRuntime(JavaVersion version) {
@@ -17,11 +17,6 @@ public class JavaWindowsRuntime extends JavaRuntime {
 		super(javaHome);
 	}
 	
-	@Override
-	protected String findJavaHome() {
-		return findJavaHome(JavaVersion.ANY);
-	}
-
 	@Override
 	protected String findJavaHome(JavaVersion version) {
 		String[] nativeJDKs = findJDKs(Paths.get(getProgramFiles(), "Java").toString(), version);
