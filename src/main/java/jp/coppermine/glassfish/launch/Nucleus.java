@@ -6,6 +6,40 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 public class Nucleus {
+	
+	public class Execute {
+		private Execute() { }
+		
+		private int executeProcess(Process process) {
+			try {
+				return process.waitFor();
+			} catch (InterruptedException e) {
+				Thread.currentThread().interrupt();
+				return Integer.MIN_VALUE;
+			}
+		}
+		
+		public int admin(String...subCommands) {
+			return executeProcess(Nucleus.this.admin(subCommands));
+		}
+		
+		public int startServer() {
+			return executeProcess(Nucleus.this.startServer());
+		}
+		
+		public int startServer(String domain) {
+			return executeProcess(Nucleus.this.startServer(domain));
+		}
+		
+		public int stopServer() {
+			return executeProcess(Nucleus.this.stopServer());
+		}
+		
+		public int stopServer(String domain) {
+			return executeProcess(Nucleus.this.stopServer(domain));
+		}
+	}
+	
 	private String javaHome;
 	private String installRoot;
 	
@@ -43,5 +77,9 @@ public class Nucleus {
 	
 	public Process stopServer(String domain) {
 		return admin("stop-domain", domain);
+	}
+	
+	public Execute execute() {
+		return new Execute();
 	}
 }
